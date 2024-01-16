@@ -25,13 +25,12 @@
                 response.json().then(data => {
                     console.log(data);
                     // body에 있는 값을 div에 출력
-                    const createShortenurlDom = document.querySelector('#shortenurl-info');
-                    createShortenurlDom.innerText = `
+                    const ShortenurlInfoDom = document.querySelector('#shortenurl-info');
+                    ShortenurlInfoDom.innerText = `
                         원본 URL : ${data.originalUrl}
                         단축 URL의 KEY : ${data.shortenUrlKey}
                         사용 횟수 : ${data.redirectCount}
                     `
-
                 });
 
             } else {
