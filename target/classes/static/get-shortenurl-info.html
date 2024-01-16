@@ -5,13 +5,46 @@
     <title>단축 URL 정보 조회</title>
 </head>
 <body>
-<form action="">
-    <input type="text" id="shortenurl-key">
+<form onsubmit="return getShortenurlInfo();">
+    <input type="text" id="shortenurl-key" required>
     <input type="submit">
 </form>
 <div id="shortenurl-info">
-
 </div>
+
+<script>
+    function getShortenurlInfo() {
+        const shortenurlKey = document.querySelector('#shortenurl-key').value;
+
+        fetch('/shortenUrl/' + shortenurlKey, {
+            method: 'GET'
+        })
+        .then(response => {
+            if (response.status === 200) {
+                // response의 body에 있는 값 가져오기
+                response.json().then(data => {
+                    console.log(data);
+                    // body에 있는 값을 div에 출력
+                    const createShortenurlDom = document.querySelector('#shortenurl-info');
+                    createShortenurlDom.innerText = `
+                        원본 URL : ${data.originalUrl}
+                        단축 URL의 KEY : ${data.shortenUrlKey}
+                        사용 횟수 : ${data.redirectCount}
+                    `
+
+                });
+
+            } else {
+                console.error('request failed');
+            }
+        })
+        .catch(error => {
+            console.error('request failed', error);
+        });
+
+        return false;
+    }
+</script>
 
 </body>
 </html>
