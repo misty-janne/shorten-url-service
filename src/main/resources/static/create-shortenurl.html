@@ -5,11 +5,46 @@
     <title>단축 URL 생성</title>
 </head>
 <body>
-<form action="">
+<form onsubmit="return createShortenurl();">
     <input type="url" id="url-input">
     <input type="submit">
 </form>
 <span id="create-shortenurl"></span>
+<script>
 
+    function createShortenurl() {
+        const url = document.querySelector('#url-input').value;
+        const requestObject = { originalUrl: url };
+
+        fetch('/shortenUrl', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestObject)
+        })
+        .then(response => {
+            if (response.status === 200) {
+//                alert("단축 URL이 생성되었습니다.");
+                // shortenurlKey 가져오기
+                response.json().then(data => {
+                    console.log(data);
+                    // url형태로 생성
+                    const createShortenurlDom = document.querySelector('#create-shortenurl');
+                    const shortenurl = window.location.protocol + "//" + window.location.host + "/" + data.shortenUrlKey;
+                    createShortenurlDom.innerText = shortenurl;
+                });
+            } else {
+                console.error('request failed');
+            }
+        })
+        .catch(error => {
+            console.error('request failed', error);
+        });
+
+        return false;
+    }
+
+</script>
 </body>
 </html>
