@@ -28,45 +28,71 @@
         </div>
     </div>
 </nav>
+<div class="container" style="width: 600px;">
     <form onsubmit="return getShortenurlInfo();">
-        <input type="text" id="shortenurl-key" required>
-        <input type="submit">
+        <label for="shortenurl-key" class="form-label">단축 URL 단건 정보 조회</label>
+        <div class="input-group">
+            <span class="input-group-text" id="local-url"></span>
+            <input type="text" id="shortenurl-key" class="form-control" placeholder="생성된 단축 URL 입력" id="basic-url" aria-describedby="basic-addon3 basic-addon4" aria-describedby="button-addon2" required>
+            <button class="btn btn-outline-secondary" type="submit" id="button-addon2">조회</button>
+        </div>
     </form>
-    <div id="shortenurl-info">
+    <div class="accordion" id="accordions" style="display:none;">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" id="shortenurl-info-button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordions">
+                <div class="accordion-body" id="shortenurl-info">
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <script>
-        function getShortenurlInfo() {
-            const shortenurlKey = document.querySelector('#shortenurl-key').value;
 
-            fetch('/shortenUrl/' + shortenurlKey, {
-                method: 'GET'
-            })
-            .then(response => {
-                if (response.status === 200) {
-                    // response의 body에 있는 값 가져오기
-                    response.json().then(data => {
-                        console.log(data);
-                        // body에 있는 값을 div에 출력
-                        const ShortenurlInfoDom = document.querySelector('#shortenurl-info');
-                        ShortenurlInfoDom.innerText = `
-                            원본 URL : ${data.originalUrl}
-                            단축 URL의 KEY : ${data.shortenUrlKey}
-                            사용 횟수 : ${data.redirectCount}
-                        `
-                    });
 
-                } else {
-                    console.error('request failed');
-                }
-            })
-            .catch(error => {
-                console.error('request failed', error);
-            });
+<script>
+    const localurl = window.location.protocol + "//" + window.location.host + "/";
+    const LocalurlDom = document.querySelector('#local-url');
+    LocalurlDom.innerText = localurl;
+    function getShortenurlInfo() {
+        const shortenurlKey = document.querySelector('#shortenurl-key').value;
 
-            return false;
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        fetch('/shortenUrl/' + shortenurlKey, {
+            method: 'GET'
+        })
+        .then(response => {
+            if (response.status === 200) {
+                const AccordionsDom = document.querySelector('#accordions');
+                AccordionsDom.style['display'] = 'block';
+                // response의 body에 있는 값 가져오기
+                response.json().then(data => {
+                    console.log(data);
+                    // body에 있는 값을 div에 출력
+                    const ShortenurlInfoButtonDom = document.querySelector('#shortenurl-info-button');
+                    const ShortenurlInfoDom = document.querySelector('#shortenurl-info');
+                    ShortenurlInfoButtonDom.innerText = localurl + shortenurlKey;
+                    ShortenurlInfoDom.innerText =
+                        `원본 URL : ${data.originalUrl}
+                        단축 URL의 KEY : ${data.shortenUrlKey}
+                        사용 횟수 : ${data.redirectCount}`
+                });
+
+            } else if (response.status === 404) {
+                alert('해당 단축 URL KEY로 생성된 정보가 없습니다.');
+            } else {
+                console.error('request failed');
+            }
+        })
+        .catch(error => {
+            console.error('request failed', error);
+        });
+
+        return false;
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
 </html>
