@@ -30,6 +30,7 @@ public class ShortenUrl {
     }
 
     public static String generateShortenUrlKey() {
+        // base56: 혼동을 피하기 위해 문자 '1'과 'o'를 생략한 base58 의 변형
         String base56Characters = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz";
         Random random = new Random();
         StringBuilder shortenUrlKey = new StringBuilder();
